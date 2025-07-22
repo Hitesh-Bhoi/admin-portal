@@ -1,3 +1,4 @@
+"use client";
 import "@/css/satoshi.css";
 import "@/css/style.css";
 
@@ -7,27 +8,36 @@ import "flatpickr/dist/flatpickr.min.css";
 import "jsvectormap/dist/jsvectormap.css";
 
 import { Header } from "@/components/Layouts/header";
-import type { Metadata } from "next";
+// import type { Metadata } from "next";
 import NextTopLoader from "nextjs-toploader";
 import type { PropsWithChildren } from "react";
 import { Providers } from "./providers";
+import { usePathname } from "next/navigation";
+import SignUp from "@/components/Auth/Signup";
+import SignIn from "@/components/Auth/Signin";
+// import SignIn from "./auth/sign-in/page";
+// import { useRouter } from "next/router";
 
-export const metadata: Metadata = {
-  title: {
-    template: "%s | NextAdmin - Next.js Dashboard Kit",
-    default: "NextAdmin - Next.js Dashboard Kit",
-  },
-  description:
-    "Next.js admin dashboard toolkit with 200+ templates, UI components, and integrations for fast dashboard development.",
-};
+// export const metadata = {
+//   title: {
+//     template: "%s | NextAdmin - Next.js Dashboard Kit",
+//     default: "NextAdmin - Next.js Dashboard Kit",
+//   },
+//   description:
+//     "Next.js admin dashboard toolkit with 200+ templates, UI components, and integrations for fast dashboard development.",
+// };
 
 export default function RootLayout({ children }: PropsWithChildren) {
+  const pathname = usePathname()
+  
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
         <Providers>
           <NextTopLoader color="#5750F1" showSpinner={false} />
-
+            {
+            pathname.includes('sign-up') ? <SignUp/> :
+            pathname.includes('sign-in') ? <SignIn/> :
           <div className="flex min-h-screen">
             <Sidebar />
 
@@ -38,7 +48,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
                 {children}
               </main>
             </div>
-          </div>
+          </div>}
         </Providers>
       </body>
     </html>

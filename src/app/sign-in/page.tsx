@@ -1,18 +1,16 @@
-import SignUp from "@/components/Auth/Signup";
-import type { Metadata } from "next";
+import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
+import SignIn from "@/components/Auth/Signin";
 
-export const metadata: Metadata = {
-  title: "Sign up",
-};
-
-export default function Signup() {
+export default function Signin() {
   return (
     <>
+      <Breadcrumb pageName="Sign In" />
+
       <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
         <div className="flex flex-wrap items-center">
           <div className="w-full">
             <div className="w-full p-4 sm:p-12.5 xl:p-15">
-              <SignUp />
+              <SignIn />
             </div>
           </div>
         </div>

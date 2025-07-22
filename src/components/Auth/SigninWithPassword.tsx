@@ -1,74 +1,120 @@
 "use client";
-import { EmailIcon, PasswordIcon } from "@/assets/icons";
+import { EmailIcon, LockPasswordIcon, PasswordIcon } from "@/assets/icons";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import InputGroup from "../FormElements/InputGroup";
 import { Checkbox } from "../FormElements/checkbox";
+import { SET_FORM_DATA } from "@/constants";
 
+type State = {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+};
+
+const initialState: State = {
+  email: "",
+  password: "",
+  rememberMe: false,
+};
+
+const reducer = (state: State, action: any) => {
+  switch (action.type) {
+    case SET_FORM_DATA:
+      return { ...state, [action.payload.name]: action.payload.value };
+    default:
+      return state;
+  }
+};
 export default function SigninWithPassword() {
-  const [data, setData] = useState({
-    email: process.env.NEXT_PUBLIC_DEMO_USER_MAIL || "",
-    password: process.env.NEXT_PUBLIC_DEMO_USER_PASS || "",
-    remember: false,
-  });
+  const [formState, dispatch] = useReducer(reducer, initialState);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [isSubmit, setIsSubmit] = useState<boolean>(false);
+  const [togglePassword, setTogglePassword] = useState<boolean>(false);
 
-  const [loading, setLoading] = useState(false);
+  const { email, password } = formState;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setData({
-      ...data,
-      [e.target.name]: e.target.value,
-    });
+  const validateFormFields = () => {
+    if (!email || !password) return false;
+    else return true;
+  };
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    let target = e.target as HTMLInputElement;
+    let { name, value, checked } = target;
+    if (name.includes("rememberMe")) {
+      return dispatch({
+        type: SET_FORM_DATA,
+        payload: { name, value: checked },
+      });
+    }
+    dispatch({ type: SET_FORM_DATA, payload: { name, value } });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    // You can remove this code block
+    setIsSubmit(true);
     setLoading(true);
+    console.log("validate form", validateFormFields());
 
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    const isValid = await validateFormFields();
+    if (isValid) {
+      console.warn("formState", formState);
+    }
+
+    // setTimeout(() => {
+    //   setLoading(false);
+    //   setIsSubmit(false);
+    // }, 1000);
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <InputGroup
-        type="email"
-        label="Email"
-        className="mb-4 [&_input]:py-[15px]"
-        placeholder="Enter your email"
-        name="email"
-        handleChange={handleChange}
-        value={data.email}
-        icon={<EmailIcon />}
-      />
+      <div>
+        <InputGroup
+          type="email"
+          label="Email"
+          className=""
+          placeholder="Enter your email"
+          name="email"
+          handleChange={handleChange}
+          icon={<EmailIcon />}
+          required
+        />
+        {!email && isSubmit && (
+          <span className="text-red">This field is required!</span>
+        )}
+      </div>
 
-      <InputGroup
-        type="password"
-        label="Password"
-        className="mb-5 [&_input]:py-[15px]"
-        placeholder="Enter your password"
-        name="password"
-        handleChange={handleChange}
-        value={data.password}
-        icon={<PasswordIcon />}
-      />
+      <div>
+        <InputGroup
+          type={togglePassword ? "text" : "password"}
+          label="Password"
+          className="cursor-pointer"
+          placeholder="Enter your password"
+          name="password"
+          handleChange={handleChange}
+          icon={
+            <span onClick={() => setTogglePassword(!togglePassword)}>
+              {togglePassword ? <PasswordIcon /> : <LockPasswordIcon />}
+            </span>
+          }
+          required
+        />
+        {!password && isSubmit && (
+          <span className="text-red">This field is required!</span>
+        )}
+      </div>
 
-      <div className="mb-6 flex items-center justify-between gap-2 py-2 font-medium">
+      <div className="flex items-center justify-between gap-2 py-2 font-medium">
         <Checkbox
           label="Remember me"
-          name="remember"
+          name="rememberMe"
           withIcon="check"
           minimal
           radius="md"
-          onChange={(e) =>
-            setData({
-              ...data,
-              remember: e.target.checked,
-            })
-          }
+          onChange={handleChange}
         />
 
         <Link
@@ -77,6 +123,17 @@ export default function SigninWithPassword() {
         >
           Forgot Password?
         </Link>
+      </div>
+
+      <div className="float-start py-2">
+        <div className="text-center">
+          <p>
+            Don’t have an account?{" "}
+            <Link href="/sign-up" className="text-primary">
+              Sign Up
+            </Link>
+          </p>
+        </div>
       </div>
 
       <div className="mb-4.5">

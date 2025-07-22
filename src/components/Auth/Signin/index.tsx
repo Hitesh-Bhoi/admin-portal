@@ -1,10 +1,15 @@
-import Link from "next/link";
 import GoogleSigninButton from "../GoogleSigninButton";
 import SigninWithPassword from "../SigninWithPassword";
 
-export default function Signin() {
+export default function SignIn() {
   return (
     <>
+    <div className=" main-container flex h-[100vh] w-full items-center justify-center bg-gray-3">
+      <div className="w-[90%] sm:w-full md:w-[80%] lg:w-[60%] xl:w-[50%] rounded-lg bg-white px-5 sm:px-5 md:px-4 lg:px-10 xl:px-10 shadow-lg">
+        <div className="">
+        <p className="py-4 text-center text-3xl font-medium text-black">
+          Sign In
+        </p>
       <GoogleSigninButton text="Sign in" /> 
 
       <div className="my-6 flex items-center justify-center">
@@ -19,13 +24,8 @@ export default function Signin() {
         <SigninWithPassword />
       </div>
 
-      <div className="mt-6 text-center">
-        <p>
-          Don’t have any account?{" "}
-          <Link href="/sign-up" className="text-primary">
-            Sign Up
-          </Link>
-        </p>
+      </div>
+      </div>
       </div>
     </>
   );
