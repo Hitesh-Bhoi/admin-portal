@@ -71,6 +71,7 @@ export default function SigninWithPassword() {
 
   return (
     <form onSubmit={handleSubmit}>
+      {/* email */}
       <div>
         <InputGroup
           type="email"
@@ -87,6 +88,7 @@ export default function SigninWithPassword() {
         )}
       </div>
 
+      {/* password */}
       <div>
         <InputGroup
           type={togglePassword ? "text" : "password"}
