@@ -3,7 +3,7 @@ import { Checkbox } from "@/components/FormElements/checkbox";
 import InputGroup, { InputArea } from "@/components/FormElements/InputGroup";
 import Link from "next/link";
 import { SET_FORM_DATA } from "../../../constants/index";
-import React, { useReducer, useState } from "react";
+import React, { useMemo, useReducer, useState } from "react";
 import { EmailIcon, LockPasswordIcon, PasswordIcon, UserIcon } from "@/assets/icons";
 
 type State = {
@@ -32,6 +32,7 @@ const SignUp = () => {
   const [formState, dispatch] = useReducer(reducer, initialState);
   const [loading, setLoading] = useState<boolean>(false);
   const [togglePassword, setTogglePassword] = useState<boolean>(false);
+  const [toggleCnfrmPassword, setToggleCnfrmPassword] = useState<boolean>(false);
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const [validFields, setValidFields] = useState<any>({
     validEmail: false,
@@ -68,25 +69,25 @@ const SignUp = () => {
     dispatch({ type: SET_FORM_DATA, payload: { name: name, value: value.trim() } });
   };
     
-  const emptyForm=()=>{
-    if(!fullname || !user_email || !user_password || !confirmpassword) return false;
-    else return true;
-  }
+  const validateFormFields = useMemo(()=>{
+        if (!fullname || !user_email || !user_password || !confirmpassword) return false;
+        else return true;
+    },[fullname, user_email, user_password, confirmpassword]);
+
   const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const payload = {...formState, email: user_email, password: user_password};
     delete payload.confirmpassword 
     delete payload.user_email 
     delete payload.user_password;
-    console.warn(payload,"payload");
     setIsSubmit(true);
-    console.warn(emptyForm());
     
-    if(emptyForm()) {
+    if(validateFormFields) {
       setLoading(true);
       setTimeout(() => {
         setLoading(false);
       }, 1000);
+      console.warn(payload,"payload");
     }
   };
 
@@ -126,6 +127,7 @@ const SignUp = () => {
                 required
                 handleChange={handleChange}
                 icon={<EmailIcon />}
+                autoComplete="off"
               />
               {!user_email && isSubmit ? (
                 <span className="text-red">Please enter your Email</span>
@@ -181,18 +183,23 @@ const SignUp = () => {
             {/* confirm password */}
             <div>
               <InputGroup
-                type="password"
+                type={toggleCnfrmPassword ? "text" : "password"}
                 label="Confirm Password"
                 placeholder="Enter your confirm password"
                 name="confirmpassword"
                 required
                 handleChange={handleChange}
+                icon={
+                  <span onClick={() => setToggleCnfrmPassword(!toggleCnfrmPassword)}>
+                    {toggleCnfrmPassword ? <PasswordIcon /> : <LockPasswordIcon />}
+                  </span>
+                }
                 autoComplete="new-password"
               />
               {!confirmpassword && isSubmit ? (
                 <span className="text-red">Please enter your Password again</span>
               ) :
-              validConfirmPassword &&
+              !validConfirmPassword &&
               <span className="text-red">Please make sure both Passwords are same</span>
             }
             </div>
@@ -213,7 +220,7 @@ const SignUp = () => {
                 className="w-full cursor-pointer rounded-lg bg-primary px-4 py-2 font-medium text-white transition hover:bg-opacity-90"
               >
                 Sign Up
-                {loading && (
+                {loading && validateFormFields && (
                   <span className="ms-1 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-white border-t-transparent dark:border-primary dark:border-t-transparent" />
                 )}
               </button>

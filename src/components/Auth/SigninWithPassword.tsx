@@ -1,20 +1,20 @@
 "use client";
 import { EmailIcon, LockPasswordIcon, PasswordIcon } from "@/assets/icons";
 import Link from "next/link";
-import React, { useReducer, useState } from "react";
+import React, { useMemo, useReducer, useState } from "react";
 import InputGroup from "../FormElements/InputGroup";
 import { Checkbox } from "../FormElements/checkbox";
 import { SET_FORM_DATA } from "@/constants";
 
 type State = {
-  email: string;
-  password: string;
+  user_email: string;
+  user_password: string;
   rememberMe: boolean;
 };
 
 const initialState: State = {
-  email: "",
-  password: "",
+  user_email: "",
+  user_password: "",
   rememberMe: false,
 };
 
@@ -36,22 +36,25 @@ export default function SigninWithPassword() {
     validPassword: false
   });
   const {validEmail, validPassword} = validFields;
-  const { email, password } = formState;
+  const { user_email, user_password } = formState;
   const validateEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const validatePassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/;
 
-  const validateFormFields = () => {
-    if (!email || !password) return false;
-    else return true;
-  };
+  const validateFormFields = useMemo(()=>{
+      if (!user_email || !user_password) return false;
+      else return true;
+  },[user_email, user_password]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     let target = e.target as HTMLInputElement;
     let { name, value, checked } = target;
-    if(name.includes("email") && !validateEmail.test(email)) {
+    console.log('name', name);
+    
+    if(name.includes("user_email") && !validateEmail.test(value)) {
       setValidFields((prev: any)=>({...prev, validEmail: true}));
-    } else if(name.includes("password") && !validatePassword.test(password)) {
+    } else if(name.includes("user_password") && (user_password && !validatePassword.test(value))) {
       setValidFields((prev: any)=>({...prev, validPassword: true}));
     } else if (name.includes("rememberMe")) {
       return dispatch({
@@ -68,19 +71,20 @@ export default function SigninWithPassword() {
     e.preventDefault();
     setIsSubmit(true);
     setLoading(true);
-    console.log("validate form", validateFormFields());
+    console.log("validate form", validateFormFields);
 
-    const isValid = await validateFormFields();
+    const isValid = await validateFormFields;
     if (isValid) {
       console.warn("formState", formState);
+      setTimeout(() => {
+        setLoading(false);
+        setIsSubmit(false);
+      }, 1000);
     }
 
-    setTimeout(() => {
-      setLoading(false);
-      setIsSubmit(false);
-    }, 1000);
   };
-
+  console.log('validateFormFields', validateFormFields);
+  
   return (
     <form onSubmit={handleSubmit} autoComplete="off">
       {/* email */}
@@ -90,13 +94,13 @@ export default function SigninWithPassword() {
           label="Email"
           className=""
           placeholder="Enter your email"
-          name="email"
+          name="user_email"
           handleChange={handleChange}
           icon={<EmailIcon />}
           required
         />
         {
-          !email ?
+          !user_email && isSubmit ?
           <span className="text-red">Please enter your Email</span>
           :
           validEmail &&
@@ -111,17 +115,18 @@ export default function SigninWithPassword() {
           label="Password"
           className="cursor-pointer"
           placeholder="Enter your password"
-          name="password"
+          name="user_password"
           handleChange={handleChange}
           icon={
             <span onClick={() => setTogglePassword(!togglePassword)}>
               {togglePassword ? <PasswordIcon /> : <LockPasswordIcon />}
             </span>
           }
+          autoComplete="new-password"
           required
         />
         {
-        !password ?(
+        !user_password && isSubmit ?(
           <span className="text-red">Please enter your Password</span>
         ) : validPassword && (
           <p className="flex flex-col">
@@ -167,10 +172,15 @@ export default function SigninWithPassword() {
       <div className="mb-4.5">
         <button
           type="submit"
-          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary p-4 font-medium text-white transition hover:bg-opacity-90"
+          className={`
+
+            flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg 
+            bg-primary p-4 font-medium text-white transition hover:bg-opacity-90`
+          }
+          // disabled={validateFormFields}
         >
           Sign In
-          {loading && (
+          {(loading && validateFormFields) && (
             <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-white border-t-transparent dark:border-primary dark:border-t-transparent" />
           )}
         </button>
