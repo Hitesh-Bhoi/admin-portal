@@ -5,6 +5,9 @@ import React, { useMemo, useReducer, useState } from "react";
 import InputGroup from "../FormElements/InputGroup";
 import { Checkbox } from "../FormElements/checkbox";
 import { SET_FORM_DATA } from "@/constants";
+import { signIn } from "@/lib/auth-apis/auth";
+import { Alert } from "../ui-elements/alert";
+import { useRouter } from "next/navigation";
 
 type State = {
   user_email: string;
@@ -39,6 +42,7 @@ export default function SigninWithPassword() {
   const { user_email, user_password } = formState;
   const validateEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const validatePassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/;
+  const router = useRouter();
 
   const validateFormFields = useMemo(()=>{
       if (!user_email || !user_password) return false;
@@ -50,7 +54,6 @@ export default function SigninWithPassword() {
   ) => {
     let target = e.target as HTMLInputElement;
     let { name, value, checked } = target;
-    console.log('name', name);
     
     if(name.includes("user_email") && !validateEmail.test(value)) {
       setValidFields((prev: any)=>({...prev, validEmail: true}));
@@ -71,19 +74,27 @@ export default function SigninWithPassword() {
     e.preventDefault();
     setIsSubmit(true);
     setLoading(true);
-    console.log("validate form", validateFormFields);
+    const formValues = {...formState, email: formState.user_email, password: formState.user_password}
+    const {user_email, user_password, ...payload} = formValues;
 
     const isValid = await validateFormFields;
     if (isValid) {
-      console.warn("formState", formState);
-      setTimeout(() => {
+      try {
+        const res = await signIn(payload);
+        router.push("/");
         setLoading(false);
         setIsSubmit(false);
-      }, 1000);
+      } catch (error) {
+        setLoading(false);
+        setIsSubmit(false);
+        console.error('Error while user login', error);
+      }
+      // <Alert variant="error" title={res?.data?.message}/>
+      // setTimeout(() => {
+      // }, 1000);
     }
 
   };
-  console.log('validateFormFields', validateFormFields);
   
   return (
     <form onSubmit={handleSubmit} autoComplete="off">

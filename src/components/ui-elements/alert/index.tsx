@@ -28,7 +28,7 @@ const icons = {
 type AlertProps = React.HTMLAttributes<HTMLDivElement> & {
   variant: "error" | "success" | "warning";
   title: string;
-  description: string;
+  description?: string;
 };
 
 const Alert = ({
