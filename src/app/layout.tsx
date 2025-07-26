@@ -10,11 +10,12 @@ import "jsvectormap/dist/jsvectormap.css";
 import { Header } from "@/components/Layouts/header";
 // import type { Metadata } from "next";
 import NextTopLoader from "nextjs-toploader";
-import type { PropsWithChildren } from "react";
+import { useEffect, useState, type PropsWithChildren } from "react";
 import { Providers } from "./providers";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import SignUp from "@/components/Auth/Signup";
 import SignIn from "@/components/Auth/Signin";
+import { verifyUser } from "@/lib/auth-apis/auth";
 // import SignIn from "./auth/sign-in/page";
 // import { useRouter } from "next/router";
 
@@ -28,7 +29,24 @@ import SignIn from "@/components/Auth/Signin";
 // };
 
 export default function RootLayout({ children }: PropsWithChildren) {
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const checkUserLogin =async()=>{
+    try {
+      const res = await verifyUser();
+      if(res?.data?.user) {
+        router.push("/");
+      } else {
+        router.push("/sign-in");
+      }
+    } catch (error) {
+      console.log("Error while verify user", error);
+    }
+  }
+  useEffect(()=>{
+    checkUserLogin();
+  },[])
   
   return (
     <html lang="en" suppressHydrationWarning>

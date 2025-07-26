@@ -1,12 +1,24 @@
 import axios from "axios"
 
-interface loginPayload {
-    email: String,
-    password: String,
-    rememberMe?: boolean
+interface authPayload {
+    email: string,
+    password: string,
+    rememberMe?: boolean,
+    fullname?: string,
 }
-export const signIn=async(payload: loginPayload)=>{
-    return await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT}sign-in`, payload, {
+
+const endpoint = process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT;
+
+export const signUp = async(payload: authPayload)=>{
+    return axios.post(`${endpoint}sign-up`, payload);
+}
+
+export const signIn=async(payload: authPayload)=>{
+    return await axios.post(`${endpoint}sign-in`, payload, {
         withCredentials: true //important for set cookie from backend
     })
+}
+
+export const verifyUser=async()=>{
+    return await axios.get(`${endpoint}verify-me`,{withCredentials: true});
 }

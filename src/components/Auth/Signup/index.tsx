@@ -5,6 +5,8 @@ import Link from "next/link";
 import { SET_FORM_DATA } from "../../../constants/index";
 import React, { useMemo, useReducer, useState } from "react";
 import { EmailIcon, LockPasswordIcon, PasswordIcon, UserIcon } from "@/assets/icons";
+import { signUp } from "@/lib/auth-apis/auth";
+import { useRouter } from "next/navigation";
 
 type State = {
   fullname: string;
@@ -48,16 +50,19 @@ const SignUp = () => {
   } = formState;
   const validateEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const validatePassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/;
+  const router = useRouter();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
+    dispatch({ type: SET_FORM_DATA, payload: { name: name, value: value.trim() } });
+    
     if(name.includes("user_email") && !validateEmail.test(value)){
-        setValidFields((prev: any)=>({...prev, validEmail: true}));
+      setValidFields((prev: any)=>({...prev, validEmail: true}));
     } else if(name.includes("user_password") && (user_password && !validatePassword.test(user_password))) {
       setValidFields((prev: any)=>({...prev, validPassword: true}));
-    } else if(name.includes("confirmpassword") && user_password !== confirmpassword) {
+    } else if(name.includes("confirmpassword") && value !== user_password) {
       setValidFields((prev: any)=>({...prev, validConfirmPassword: true}));
     } else {
       setValidFields({
@@ -66,7 +71,6 @@ const SignUp = () => {
         validConfirmPassword: false,
       });
     }
-    dispatch({ type: SET_FORM_DATA, payload: { name: name, value: value.trim() } });
   };
     
   const validateFormFields = useMemo(()=>{
@@ -76,7 +80,7 @@ const SignUp = () => {
 
   const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const payload = {...formState, email: user_email, password: user_password};
+    const payload = {...formState, email: user_email as string, password: user_password as string};
     delete payload.confirmpassword 
     delete payload.user_email 
     delete payload.user_password;
@@ -84,13 +88,17 @@ const SignUp = () => {
     
     if(validateFormFields) {
       setLoading(true);
-      setTimeout(() => {
+      try {
+        await signUp(payload);
+        router.push("/sign-in");
         setLoading(false);
-      }, 1000);
-      console.warn(payload,"payload");
+      } catch (error) {
+        console.log('Error while sign-up process', error);
+        setLoading(false);
+      }
     }
   };
-
+  
   return (
     <div className="flex h-[100vh] w-full items-center justify-center overflow-y-auto bg-gray-3">
       <div className="w-[90%] rounded-lg bg-white px-5 shadow-lg sm:w-full sm:px-5 md:w-[80%] md:px-4 lg:w-[60%] lg:px-10 xl:w-[50%] xl:px-10">
@@ -199,7 +207,7 @@ const SignUp = () => {
               {!confirmpassword && isSubmit ? (
                 <span className="text-red">Please enter your Password again</span>
               ) :
-              !validConfirmPassword &&
+              validConfirmPassword &&
               <span className="text-red">Please make sure both Passwords are same</span>
             }
             </div>
