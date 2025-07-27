@@ -9,16 +9,20 @@ interface authPayload {
 
 const endpoint = process.env.NEXT_PUBLIC_BACKEND_API_ENDPOINT;
 
-export const signUp = async(payload: authPayload)=>{
+export const signUp = async (payload: authPayload) => {
     return axios.post(`${endpoint}sign-up`, payload);
 }
 
-export const signIn=async(payload: authPayload)=>{
+export const signIn = async (payload: authPayload) => {
     return await axios.post(`${endpoint}sign-in`, payload, {
         withCredentials: true //important for set cookie from backend
     })
 }
 
-export const verifyUser=async()=>{
-    return await axios.get(`${endpoint}verify-me`,{withCredentials: true});
+export const verifyUser = async () => {
+    return await axios.get(`${endpoint}verify-me`, { withCredentials: true });
+}
+
+export const signOutUser = async () => {
+    return await axios.post(`${endpoint}sign-out`, {}, { withCredentials: true })
 }

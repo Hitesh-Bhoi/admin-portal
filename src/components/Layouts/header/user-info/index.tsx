@@ -6,19 +6,30 @@ import {
   DropdownContent,
   DropdownTrigger,
 } from "@/components/ui/dropdown";
+import { signOutUser } from "@/lib/auth-apis/auth";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
-
+  const router = useRouter();
   const USER = {
     name: "John Smith",
     email: "johnson@nextadmin.com",
     img: "/images/user/user-03.png",
   };
+
+  const handleLogout=async()=>{
+    try {
+      await signOutUser();
+      router.push("/sign-in");
+    } catch (error) {
+      console.log('Error while logout', error);
+    }
+  }
 
   return (
     <Dropdown isOpen={isOpen} setIsOpen={setIsOpen}>
@@ -109,7 +120,7 @@ export function UserInfo() {
           >
             <LogOutIcon />
 
-            <span className="text-base font-medium">Log out</span>
+            <span className="text-base font-medium" onClick={handleLogout}>Log out</span>
           </button>
         </div>
       </DropdownContent>
