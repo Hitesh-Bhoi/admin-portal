@@ -1,10 +1,10 @@
 import { cn } from "@/lib/utils";
 import { cva } from "class-variance-authority";
 import React from "react";
-import { AlertErrorIcon, AlertSuccessIcon, AlertWarningIcon } from "@/assets/icons";
+import { AlertErrorIcon, AlertSuccessIcon, AlertWarningIcon, IconProps } from "@/assets/icons";
 
 const alertVariants = cva(
-  "flex gap-5 w-full rounded-[10px] border-l-6 px-7 py-8 dark:bg-opacity-30 md:p-9",
+  "flex items-center gap-5 w-full rounded-[10px] border-l-6 dark:bg-opacity-30 p-[8px] ",
   {
     variants: {
       variant: {
@@ -26,31 +26,37 @@ const icons = {
 };
 
 type AlertProps = React.HTMLAttributes<HTMLDivElement> & {
-  variant: "error" | "success" | "warning";
+  show: boolean,
+  variant: "" | "error" | "success" | "warning";
   title: string;
   description?: string;
 };
 
 const Alert = ({
   className,
+  show,
   variant,
   title,
   description,
   ...props
 }: AlertProps) => {
-  const IconComponent = icons[variant];
-
+  let IconComponent: React.ComponentType<IconProps> | null = null;
+  if (variant === "error" || variant === "success" || variant === "warning") {
+  IconComponent = icons[variant];
+  }
+  if(!show) return null;
   return (
+    <div className="absolute top-0 right-0 lg:w-[400px] w-[300px] md:w-[400px] mt-[10px] me-[10px]">
     <div
       role="alert"
-      className={cn(alertVariants({ variant }), className)}
+      className={cn(alertVariants({ variant :variant || undefined }), className)}
       {...props}
     >
-      <IconComponent />
+      {IconComponent  && <IconComponent />}
 
       <div className="w-full">
         <h5
-          className={cn("mb-4 font-bold leading-[22px]", {
+          className={cn("font-bold m-0 p-0", {
             "text-[#004434] dark:text-[#34D399]": variant === "success",
             "text-[#9D5425]": variant === "warning",
             "text-[#BC1C21]": variant === "error",
@@ -69,6 +75,7 @@ const Alert = ({
           {description}
         </div>
       </div>
+    </div>
     </div>
   );
 };
