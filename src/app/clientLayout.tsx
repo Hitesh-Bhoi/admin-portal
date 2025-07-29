@@ -7,6 +7,8 @@ import SignIn from "@/components/Auth/Signin";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { verifyUser } from "@/lib/auth-apis/auth";
+import ForgotPassword from "@/components/Auth/forgot-password/ForgotPassword";
+import ResetPassword from "@/components/Auth/reset-password/ResetPassword";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -35,6 +37,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   if (pathname.includes("sign-up")) return <SignUp />;
   if (pathname.includes("sign-in")) return <SignIn />;
+  if (pathname.includes("forgot-password")) return <ForgotPassword />;
+  if (pathname.includes("reset-password")) return <ResetPassword />;
 
   return (
     <div className="flex min-h-screen">
