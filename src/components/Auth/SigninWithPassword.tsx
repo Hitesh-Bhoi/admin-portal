@@ -101,7 +101,9 @@ export default function SigninWithPassword() {
     const isValid = await validateFormFields;
     if (isValid) {
       try {
-        const res = await signIn(payload);        
+        const res = await signIn(payload);
+        localStorage.setItem("auth", JSON.stringify(res?.data?.data));    
+            
         setMessageInfo({
           show: true,
           variant: "success",

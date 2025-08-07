@@ -26,3 +26,7 @@ export const verifyUser = async () => {
 export const signOutUser = async () => {
     return await axios.post(`${endpoint}sign-out`, {}, { withCredentials: true })
 }
+
+export const forgotPassowrd = async(email: string) =>{
+    return await axios.post(`${endpoint}forgot-password/${email}`);
+}

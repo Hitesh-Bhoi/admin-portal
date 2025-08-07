@@ -1,5 +1,7 @@
 import { EmailIcon } from "@/assets/icons";
 import InputGroup from "@/components/FormElements/InputGroup";
+import { forgotPassowrd } from "@/lib/auth-apis/auth";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function ForgotPassword() {
@@ -10,6 +12,7 @@ export default function ForgotPassword() {
     loading: false,
   });
   const { isSubmit, validField, loading } = validateState;
+  const router = useRouter();
   const validateEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const handleChange = (
@@ -22,10 +25,9 @@ export default function ForgotPassword() {
     } else {
       setValidateState((prev: any) => ({ ...prev, validField: true }));
     }
-    console.warn("value", value);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setValidateState((prev: any) => ({
       ...prev,
@@ -39,8 +41,10 @@ export default function ForgotPassword() {
           isSubmit: false,
         }));
         // api call
+        const res = await forgotPassowrd(email);
         setTimeout(() => {
           setValidateState((prev: any) => ({ ...prev, loading: false }));
+          router.push("/reset-password")
         }, 5000);
       }
     } catch (error) {
@@ -55,7 +59,7 @@ export default function ForgotPassword() {
           <form action="post" onSubmit={handleSubmit}>
             <div>
               <p className="py-4 text-center text-3xl font-medium text-black">
-                forgot password
+                Forgot password
               </p>
               <InputGroup
                 type="email"

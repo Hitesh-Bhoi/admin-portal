@@ -16,15 +16,20 @@ import { useState } from "react";
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const auth = localStorage.getItem('auth');
+  const userInfo = auth && JSON.parse(auth)
+  console.warn('auth', userInfo);
+  
   const USER = {
-    name: "John Smith",
-    email: "johnson@nextadmin.com",
+    name: userInfo?.name || '',
+    email: userInfo?.email || '',
     img: "/images/user/user-03.png",
   };
 
   const handleLogout=async()=>{
     try {
       await signOutUser();
+      localStorage.clear();
       router.push("/sign-in");
     } catch (error) {
       console.log('Error while logout', error);
