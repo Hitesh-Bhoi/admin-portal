@@ -3,6 +3,7 @@
 import Pagination from "@/components/Pagination/Pagination";
 import { getAllUsers } from "@/lib/fe-apis/fe-apis";
 import { useEffect, useState } from "react";
+import {Delete, EditUser } from "../../assets/icons"
 
 export default function Home() {
   const [users, setUsers] = useState([]);
@@ -23,43 +24,58 @@ export default function Home() {
   return (
     <>
       <div className="relative overflow-x-auto">
-        <table id="search-table" className="w-full text-left text-sm text-gray-500 dark:text-gray-400 rtl:text-right">
-          <thead className="text-xs text-gray-900 dark:text-gray-400">
+        <table id="search-table" className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+          <thead className="text-xs text-gray-900 dark:text-gray-400 bg-white">
             <tr>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-2 py-2">
                 Username
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-2 py-2">
                 Email
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-2 py-2">
                 CreatedAt
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-2 py-2">
                 Order status
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-2 py-2">
                 Action
               </th>
             </tr>
           </thead>
           <tbody>
             {users.map((user: any, index) => {
-              console.log("user", user);
+              console.log("user", user, user?.orderStatus == "success");
               return (
-                <>
-                  <tr className="bg-white dark:bg-gray-800" key={index + 1}>
-                    <td className="px-6 py-4">{user?.fullname}</td>
-                    <td className="px-6 py-4">{user?.email}</td>
-                    <td className="px-6 py-4">{user?.createdAt || "N/A"}</td>
-                    <td className="px-6 py-4">{user?.orderStatus || "N/A"}</td>
-                    <td className="flex items-center justify-start gap-2 px-6 py-4">
-                      <span>Edit</span>
-                      <span>Delete</span>
-                    </td>
-                    <td className="px-6 py-4"></td>
-                  </tr>
-                </>
+                <tr className="bg-white dark:bg-gray-800" key={index + 1}>
+                  <td className="px-2 py-2">{user?.fullname}</td>
+                  <td className="px-2 py-2">{user?.email}</td>
+                  <td className="px-2 py-2">{user?.createdAt || "N/A"}</td>
+                  <td className="px-2 py-2">
+                    <span
+                      className={`${
+                        user?.orderStatus === "success"
+                          ? "bg-green-100 text-green-700"
+                          : user?.orderStatus === "pending"
+                            ? "bg-yellow-200 text-yellow-700"
+                            : user?.orderStatus === "failed"
+                              ? "bg-red-100 text-red-700"
+                              : ""
+                      } rounded-lg px-4 py-2 text-sm font-medium`}
+                    >
+                      {user?.orderStatus?.charAt(0).toUpperCase() + user?.orderStatus?.slice(1) || "N/A"}
+                    </span>
+                  </td>
+                  <td className="flex items-center justify-start gap-1 px-2 py-2">
+                    <span>
+                      <EditUser />
+                    </span>
+                    <span>
+                      <Delete />
+                    </span>
+                  </td>
+                </tr>
               );
             })}
           </tbody>
