@@ -4,6 +4,10 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "looka.com",
+      },
+      {
+        protocol: "https",
         hostname: "cdn.sanity.io",
         port: ""
       },

@@ -9,6 +9,8 @@ import { NAV_DATA } from "./data";
 import { ArrowLeftIcon, ChevronUp } from "@/assets/icons";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
+import Image from "next/image";
+import logo from "/public/images/my-shop-3.png" 
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -28,7 +30,7 @@ export function Sidebar() {
     // Keep collapsible open, when it's subpage is active
     NAV_DATA.some((section) => {
       return section.items.some((item) => {
-        return item.items.some((subItem) => {
+        return item.items.some((subItem: any) => {
           if (subItem.url === pathname) {
             if (!expandedItems.includes(item.title)) {
               toggleExpanded(item.title);
@@ -63,14 +65,14 @@ export function Sidebar() {
         aria-hidden={!isOpen}
         inert={!isOpen}
       >
-        <div className="flex h-full flex-col py-10 pl-[25px] pr-[7px]">
-          <div className="relative pr-4.5">
+        <div className="flex h-full flex-col py-2 pl-[25px] pr-[7px]">
+          <div className="flex justify-center relative pr-4.5">
             <Link
               href={"/"}
               onClick={() => isMobile && toggleSidebar()}
               className="px-0 py-2.5 min-[850px]:py-0"
             >
-              <Logo />
+              <Image src={logo} alt="webaite logo" width={150}/>
             </Link>
 
             {isMobile && (
@@ -86,7 +88,7 @@ export function Sidebar() {
           </div>
 
           {/* Navigation */}
-          <div className="custom-scrollbar mt-6 flex-1 overflow-y-auto pr-3 min-[850px]:mt-10">
+          <div className="custom-scrollbar mt-2 flex-1 overflow-y-auto pr-3">
             {NAV_DATA.map((section) => (
               <div key={section.label} className="mb-6">
                 <h2 className="mb-5 text-sm font-medium text-dark-4 dark:text-dark-6">
@@ -127,7 +129,7 @@ export function Sidebar() {
                                 className="ml-9 mr-0 space-y-1.5 pb-[15px] pr-0 pt-2"
                                 role="menu"
                               >
-                                {item.items.map((subItem) => (
+                                {item.items.map((subItem: any) => (
                                   <li key={subItem.title} role="none">
                                     <MenuItem
                                       as="link"
@@ -144,7 +146,7 @@ export function Sidebar() {
                         ) : (
                           (() => {
                             const href =
-                              "url" in item
+                              "url" in item as any
                                 ? item.url + ""
                                 : "/" +
                                   item.title.toLowerCase().split(" ").join("-");

@@ -5,10 +5,14 @@ import "jsvectormap/dist/jsvectormap.css";
 
 import { Providers } from "./providers";
 import NextTopLoader from "nextjs-toploader";
+import { Metadata } from "next";
 
-export const metadata = {
-  title: "My App",
-  description: "Awesome App",
+export const metadata: Metadata= {
+  title: "My Shop",
+  description: "Online plateform for fresh foods",
+  icons: {
+    icon: "/favicon.svg",
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

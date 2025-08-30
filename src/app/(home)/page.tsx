@@ -62,7 +62,7 @@ export default function Home() {
                             : user?.orderStatus === "failed"
                               ? "bg-red-100 text-red-700"
                               : ""
-                      } rounded-lg px-4 py-2 text-sm font-medium`}
+                      } rounded-lg px-4 py-2 text-sm`}
                     >
                       {user?.orderStatus?.charAt(0).toUpperCase() + user?.orderStatus?.slice(1) || "N/A"}
                     </span>
