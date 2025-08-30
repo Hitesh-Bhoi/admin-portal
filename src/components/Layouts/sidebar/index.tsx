@@ -10,7 +10,7 @@ import { ArrowLeftIcon, ChevronUp } from "@/assets/icons";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
 import Image from "next/image";
-import logo from "/public/images/my-shop-3.png" 
+import logo from "/public/icons/brand/gn.png" 
 
 export function Sidebar() {
   const pathname = usePathname();
