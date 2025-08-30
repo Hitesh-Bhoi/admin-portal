@@ -41,10 +41,11 @@ export default function ForgotPassword() {
           isSubmit: false,
         }));
         // api call
-        const res = await forgotPassowrd(email);
+        await forgotPassowrd(email);
+        localStorage.setItem("email",email);
         setTimeout(() => {
           setValidateState((prev: any) => ({ ...prev, loading: false }));
-          router.push("/reset-password")
+          router.push("/sign-in")
         }, 5000);
       }
     } catch (error) {
@@ -85,6 +86,7 @@ export default function ForgotPassword() {
               <button
                 type="submit"
                 className="w-full cursor-pointer rounded-lg bg-primary px-4 py-2 font-medium text-white transition hover:bg-opacity-90"
+                disabled={loading}
               >
                 forgot password
                 {loading && (

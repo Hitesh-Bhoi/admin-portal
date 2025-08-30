@@ -1,5 +1,5 @@
 "use client";
-import { EmailIcon, LockPasswordIcon, PasswordIcon } from "@/assets/icons";
+import { LockPasswordIcon, PasswordIcon } from "@/assets/icons";
 import InputGroup from "@/components/FormElements/InputGroup";
 import {
   SET_LOADING_STATE,
@@ -11,9 +11,9 @@ import {
   SET_VALID_CONFIRM_PASSWORD,
   SET_VALID_PASSWORD,
 } from "@/constants";
-import { forgotPassowrd } from "@/lib/auth-apis/auth";
-import { useRouter } from "next/navigation";
-import { useReducer, useState } from "react";
+import { forgotPassowrd, resetPassword } from "@/lib/auth-apis/auth";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useReducer } from "react";
 
 type State = {
   password: string;
@@ -29,9 +29,7 @@ const reducer = (state: State, action: any) => {
   switch (action.type) {
     case SET_RESET_PASSWORD:
       return { ...state, password: action.payload };
-    case SET_RESET_CONFIRM_PASSWORD:
-      console.warn('action', action);
-      
+    case SET_RESET_CONFIRM_PASSWORD:      
       return { ...state, confirmpassword: action.payload };
     case SET_TOGGLE_PASSWORD:
       return { ...state, togglePassword: action.payload };
@@ -41,9 +39,7 @@ const reducer = (state: State, action: any) => {
       return { ...state, validPassword: action.value };
     case SET_VALID_CONFIRM_PASSWORD:
       return { ...state, validConfirmPassword: action.payload };
-    case SET_SUBMIT_STATE:
-      console.warn('action', action);
-      
+    case SET_SUBMIT_STATE:      
       return { ...state, isSubmit: action.payload };
     case SET_LOADING_STATE:
       return { ...state, loading: action.payload };
@@ -74,6 +70,10 @@ export default function ResetPassword() {
     isSubmit,
     loading,
   } = resetPasswordState;
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+  const email = localStorage.getItem('email');
+  
   const router = useRouter();
   const validatePassword =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/;
@@ -103,9 +103,9 @@ export default function ResetPassword() {
     e.preventDefault();
     dispatch({ type: SET_SUBMIT_STATE, payload: true });
     try {
-      console.warn("password", password);
-      console.warn("confirmpassword", confirmpassword);
-
+      const res = await resetPassword({email, password, token});
+      localStorage.removeItem('email');
+      
       if (password) {
         dispatch({ type: SET_LOADING_STATE, payload: true });
         // api call
@@ -113,8 +113,8 @@ export default function ResetPassword() {
         setTimeout(() => {
           dispatch({ type: SET_SUBMIT_STATE, payload: false });
           dispatch({ type: SET_LOADING_STATE, payload: false });
-          router.push("/reset-password");
-        }, 5000);
+          router.push("/sign-in");
+        }, 2000);
       }
     } catch (error) {
       dispatch({ type: SET_LOADING_STATE, payload: false });

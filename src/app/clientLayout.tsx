@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Sidebar } from "@/components/Layouts/sidebar";
 import { Header } from "@/components/Layouts/header";
@@ -10,7 +10,11 @@ import { verifyUser } from "@/lib/auth-apis/auth";
 import ForgotPassword from "@/components/Auth/forgot-password/ForgotPassword";
 import ResetPassword from "@/components/Auth/reset-password/ResetPassword";
 
-export default function ClientLayout({ children }: { children: React.ReactNode }) {
+export default function ClientLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -23,10 +27,17 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const checkUserLogin = async () => {
     try {
       const res = await verifyUser();
-      if (res?.data?.user) {
-        router.push("/");
-      } else {
-        router.push("/sign-in");
+
+      // Insure that user is not on the forgot-password or reset-password screens
+      if (
+        !pathname.includes("/forgot-password") &&
+        !pathname.includes("/reset-password")
+      ) {
+        if (res?.data?.user) {
+          router.push("/");
+        } else {
+          router.push("/sign-in");
+        }
       }
     } catch (error) {
       console.log("Error while verify user", error);

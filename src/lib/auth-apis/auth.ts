@@ -30,3 +30,7 @@ export const signOutUser = async () => {
 export const forgotPassowrd = async(email: string) =>{
     return await axios.post(`${endpoint}forgot-password/${email}`);
 }
+
+export const resetPassword =async(payload: any) =>{
+    return await axios.put(`${endpoint}reset-password`, payload)
+}
